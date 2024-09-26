@@ -1,0 +1,1 @@
+# Image Text Extraction - ASP.NET Core MVC - Eng Mage-Ali
