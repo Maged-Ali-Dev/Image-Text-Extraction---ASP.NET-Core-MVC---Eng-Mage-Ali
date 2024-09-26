@@ -1,0 +1,97 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+@model dynamic
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Upload and Extract Text from Image</h2>
+
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <div class="alert alert-danger text-center">@ViewBag.ErrorMessage</div>
+    }
+
+    <form asp-action="UploadImage" method="post" enctype="multipart/form-data" class="mb-4">
+        <div class="form-group">
+            <input type="file" name="file" class="form-control-file" required />
+        </div>
+        <div class="form-group">
+            <select name="selectedLanguage" class="form-control" required>
+                <option value="" disabled selected>Select Language</option>
+                <option value="eng">English</option>
+                <option value="ara">Arabic</option>
+                <!-- Add more languages as needed -->
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Upload</button>
+    </form>
+
+    @if (ViewBag.ImagePath != null)
+    {
+        <h3 class="text-center">Uploaded Image</h3>
+        <div class="text-center">
+            <img src="@ViewBag.ImagePath" alt="Uploaded Image" class="img-fluid mb-4" style="max-width: 100%; height: auto;" />
+        </div>
+
+        <form asp-action="ExtractText" method="post" class="mb-4">
+            <input type="hidden" name="imageUrl" value="@ViewBag.ImagePath" />
+            <input type="hidden" name="selectedLanguage" value="@ViewBag.SelectedLanguage" />
+            <button type="submit" class="btn btn-success btn-block">Extract Text</button>
+        </form>
+    }
+
+    @if (ViewBag.ExtractedText != null)
+    {
+        <h3 class="text-center">Extracted Text</h3>
+        <textarea id="extractedText" class="form-control mb-2" rows="10">@ViewBag.ExtractedText</textarea>
+        <button class="btn btn-info btn-block" onclick="copyToClipboard()">Copy to Clipboard</button>
+        <div id="copyMessage" class="alert alert-success mt-2" style="display:none;">Text copied to clipboard!</div>
+    }
+</div>
+
+<!-- JavaScript function to copy the extracted text -->
+<script>
+    function copyToClipboard() {
+        var textArea = document.getElementById("extractedText");
+        textArea.select();
+        textArea.setSelectionRange(0, 99999); // For mobile devices
+
+        navigator.clipboard.writeText(textArea.value).then(() => {
+            // Show the message label
+            var copyMessage = document.getElementById("copyMessage");
+            copyMessage.style.display = "block";
+
+            // Hide the message after 2 seconds
+            setTimeout(() => {
+                copyMessage.style.display = "none";
+            }, 2000);
+        }).catch(err => {
+            // Optionally handle error
+            console.error('Failed to copy text: ', err);
+        });
+    }
+</script>
+
+<style>
+    /* Additional custom styles */
+    body {
+        background-color: #f8f9fa; /* Light background for contrast */
+    }
+
+    h2, h3 {
+        color: #343a40; /* Darker text color */
+    }
+
+    .form-control, .form-control-file {
+        border-radius: 0.5rem; /* Rounded corners for form elements */
+        border: 1px solid #ced4da; /* Border color */
+    }
+
+    .btn {
+        border-radius: 0.5rem; /* Rounded button corners */
+    }
+
+    .alert {
+        border-radius: 0.5rem; /* Rounded corners for alerts */
+    }
+</style>
